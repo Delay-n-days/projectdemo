@@ -18,6 +18,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _logMessage = "";
     [ObservableProperty] private int _counterValue;
     [ObservableProperty] private string _statusMessage = "Ready";
+    [ObservableProperty] private string _saveAsPath = @"C:\Temp\MyProjectCopy";
+    [ObservableProperty] private string _templatePath = @"C:\Temp\TemplateProject\TemplateProject.json";
+    [ObservableProperty] private string _newProjectPath = @"C:\Temp\NewProject";
     
     public ObservableCollection<string> Logs { get; } = [];
 
@@ -110,6 +113,47 @@ public partial class MainViewModel : ObservableObject
             _app.SaveProject();
             UpdateDisplay();
             StatusMessage = "✓ 计数器已重置";
+        }
+    }
+
+    [RelayCommand]
+    private void SaveAsProject()
+    {
+        try
+        {
+            if (_app.ProjectConfig == null)
+            {
+                StatusMessage = "✗ 错误: 没有打开的项目";
+                return;
+            }
+
+            _app.SaveAs(SaveAsPath);
+            StatusMessage = $"✓ 项目已另存为: {SaveAsPath}";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"✗ 错误: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void CreateFromTemplate()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(TemplatePath) || string.IsNullOrWhiteSpace(NewProjectPath))
+            {
+                StatusMessage = "✗ 错误: 请输入模板路径和新项目路径";
+                return;
+            }
+
+            _app.CreateFromTemplate(TemplatePath, NewProjectPath);
+            StatusMessage = $"✓ 从模板创建项目成功: {NewProjectPath}";
+            UpdateDisplay();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"✗ 错误: {ex.Message}";
         }
     }
 

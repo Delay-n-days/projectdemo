@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectManager.Core\ProjectManager.Core.csproj" />
+    <ProjectReference Include="..\ProjectManager.UI\ProjectManager.UI.csproj" />
   </ItemGroup>
 
 </Project>

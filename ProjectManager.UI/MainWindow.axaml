@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:ProjectManager.UI.ViewModels"
         x:Class="ProjectManager.UI.MainWindow"
         x:DataType="vm:MainViewModel"
-        Width="900" Height="650"
+        Width="900" Height="750"
         Title="ProjectManager - Avalonia UI Demo">
 
     <Design.DataContext>
@@ -30,6 +30,31 @@
                 <Button Content="创建项目" Command="{Binding CreateProjectCommand}" Padding="20,8"/>
                 <Button Content="打开项目" Command="{Binding OpenProjectCommand}" Padding="20,8"/>
             </StackPanel>
+
+            <!-- 另存为 -->
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,5">
+                <TextBlock Grid.Column="0" Text="另存为路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="1" Text="{Binding SaveAsPath}" Watermark="C:\Temp\MyProjectCopy" />
+                <Button Grid.Column="2" Content="另存为项目" Command="{Binding SaveAsProjectCommand}" 
+                        Padding="20,8" Margin="10,0,0,0"/>
+            </Grid>
+
+            <!-- 从模板创建 -->
+            <TextBlock Text="从模板创建项目" FontWeight="SemiBold" Margin="0,5,0,0"/>
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" Margin="0,5">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="模板路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TemplatePath}" 
+                         Watermark="C:\Temp\Template\Template.json" />
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="新项目路径:" VerticalAlignment="Center" 
+                           Margin="0,5,10,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewProjectPath}" 
+                         Watermark="C:\Temp\NewProject" Margin="0,5,0,0"/>
+                
+                <Button Grid.Row="2" Grid.Column="1" Content="从模板创建" 
+                        Command="{Binding CreateFromTemplateCommand}" 
+                        Padding="20,8" Margin="0,5,0,0" HorizontalAlignment="Left"/>
+            </Grid>
         </StackPanel>
 
         <!-- 主功能区 -->
