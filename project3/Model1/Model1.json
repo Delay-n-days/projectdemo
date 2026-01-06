@@ -1,0 +1,8 @@
+{
+    "model_name": "Model1",
+    "description": "Null",
+    "parameters": {
+        "param1": 100,
+        "param2": 200
+    }
+}

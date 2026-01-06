@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ProjectManager.UI.ViewModels"
+        x:Class="ProjectManager.UI.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Width="900" Height="650"
+        Title="ProjectManager - Avalonia UI Demo">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="15" RowDefinitions="Auto,*,Auto">
+        
+        <!-- 项目配置区 -->
+        <StackPanel Grid.Row="0" Spacing="10">
+            <TextBlock Text="项目配置" FontSize="18" FontWeight="Bold" />
+            <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" Margin="0,5">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProjectPath}" Watermark="C:\Temp\MyProject" />
+                
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="名称:" VerticalAlignment="Center" Margin="15,0,10,0"/>
+                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ProjectName}" Watermark="项目名称" />
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="版本:" VerticalAlignment="Center" Margin="0,10,10,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Watermark="1.0.0" Margin="0,10,0,0"/>
+            </Grid>
+            
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="创建项目" Command="{Binding CreateProjectCommand}" Padding="20,8"/>
+                <Button Content="打开项目" Command="{Binding OpenProjectCommand}" Padding="20,8"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 主功能区 -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,20">
+            
+            <!-- 日志区 -->
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Margin="0,0,5,0">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="日志记录器" FontSize="16" FontWeight="Bold" />
+                    
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Grid.Column="0" Text="{Binding LogMessage}" Watermark="输入日志消息..." />
+                        <Button Grid.Column="1" Content="添加" Command="{Binding AddLogCommand}" 
+                                Padding="15,0" Margin="5,0,0,0"/>
+                    </Grid>
+                    
+                    <TextBlock Text="日志列表:" FontWeight="SemiBold" />
+                    <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="3" Height="350">
+                        <ScrollViewer>
+                            <ItemsControl ItemsSource="{Binding Logs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" Margin="5,2" FontFamily="Consolas"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- 计数器区 -->
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Margin="5,0,0,0">
+                <StackPanel Spacing="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="操作计数器" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    
+                    <Border BorderBrush="DodgerBlue" BorderThickness="3" CornerRadius="10" 
+                            Padding="30" Background="#F0F8FF">
+                        <TextBlock Text="{Binding CounterValue}" FontSize="72" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" Foreground="DodgerBlue"/>
+                    </Border>
+                    
+                    <StackPanel Spacing="10">
+                        <Button Content="➕ 增加" Command="{Binding IncrementCounterCommand}" 
+                                HorizontalAlignment="Stretch" Padding="0,12" FontSize="16"/>
+                        <Button Content="➖ 减少" Command="{Binding DecrementCounterCommand}" 
+                                HorizontalAlignment="Stretch" Padding="0,12" FontSize="16"/>
+                        <Button Content="🔄 重置" Command="{Binding ResetCounterCommand}" 
+                                HorizontalAlignment="Stretch" Padding="0,12" FontSize="16"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Background="#F5F5F5" CornerRadius="3" Padding="10,8" Margin="0,10,0,0">
+            <TextBlock Text="{Binding StatusMessage}" FontFamily="Consolas" />
+        </Border>
+    </Grid>
+</Window>

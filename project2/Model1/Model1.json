@@ -1,0 +1,9 @@
+{
+    "model_name": "Model1",
+    "description": "This is the first model in project1.",
+    "parameters": {
+        "param1": 11,
+        "param2": 21,
+        "param4": 40
+    }
+}
