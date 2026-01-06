@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProjectManager.Core;
@@ -5,12 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ProjectManager.UI.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
     private readonly Application _app = new();
+    private Window? _window;
 
     [ObservableProperty] private string _projectPath = @"C:\Temp\MyProject";
     [ObservableProperty] private string _projectName = "TestProject";
@@ -23,6 +28,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _newProjectPath = @"C:\Temp\NewProject";
     
     public ObservableCollection<string> Logs { get; } = [];
+
+    public void SetWindow(Window window)
+    {
+        _window = window;
+    }
 
     [RelayCommand]
     private void CreateProject()
@@ -154,6 +164,75 @@ public partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             StatusMessage = $"✗ 错误: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseProjectPath()
+    {
+        if (_window == null) return;
+
+        var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "选择项目路径",
+            AllowMultiple = false
+        });
+
+        if (folder.Count > 0)
+        {
+            ProjectPath = folder[0].Path.LocalPath;
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseSaveAsPath()
+    {
+        if (_window == null) return;
+
+        var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "选择另存为路径",
+            AllowMultiple = false
+        });
+
+        if (folder.Count > 0)
+        {
+            SaveAsPath = folder[0].Path.LocalPath;
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseTemplatePath()
+    {
+        if (_window == null) return;
+
+        var files = await _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "选择模板文件",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { new FilePickerFileType("JSON文件") { Patterns = new[] { "*.json" } } }
+        });
+
+        if (files.Count > 0)
+        {
+            TemplatePath = files[0].Path.LocalPath;
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseNewProjectPath()
+    {
+        if (_window == null) return;
+
+        var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "选择新项目路径",
+            AllowMultiple = false
+        });
+
+        if (folder.Count > 0)
+        {
+            NewProjectPath = folder[0].Path.LocalPath;
         }
     }
 

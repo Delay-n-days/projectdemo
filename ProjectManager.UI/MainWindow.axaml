@@ -15,12 +15,14 @@
         <!-- 项目配置区 -->
         <StackPanel Grid.Row="0" Spacing="10">
             <TextBlock Text="项目配置" FontSize="18" FontWeight="Bold" />
-            <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" Margin="0,5">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,*" RowDefinitions="Auto,Auto" Margin="0,5">
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ProjectPath}" Watermark="C:\Temp\MyProject" />
+                <Button Grid.Row="0" Grid.Column="2" Content="浏览..." Command="{Binding BrowseProjectPathCommand}" 
+                        Padding="15,5" Margin="5,0,15,0"/>
                 
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="名称:" VerticalAlignment="Center" Margin="15,0,10,0"/>
-                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ProjectName}" Watermark="项目名称" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="名称:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Row="0" Grid.Column="4" Text="{Binding ProjectName}" Watermark="项目名称" />
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="版本:" VerticalAlignment="Center" Margin="0,10,10,0"/>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Version}" Watermark="1.0.0" Margin="0,10,0,0"/>
@@ -32,24 +34,30 @@
             </StackPanel>
 
             <!-- 另存为 -->
-            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,5">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,5">
                 <TextBlock Grid.Column="0" Text="另存为路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <TextBox Grid.Column="1" Text="{Binding SaveAsPath}" Watermark="C:\Temp\MyProjectCopy" />
-                <Button Grid.Column="2" Content="另存为项目" Command="{Binding SaveAsProjectCommand}" 
-                        Padding="20,8" Margin="10,0,0,0"/>
+                <Button Grid.Column="2" Content="浏览..." Command="{Binding BrowseSaveAsPathCommand}" 
+                        Padding="15,5" Margin="5,0,5,0"/>
+                <Button Grid.Column="3" Content="另存为项目" Command="{Binding SaveAsProjectCommand}" 
+                        Padding="20,8" Margin="0,0,0,0"/>
             </Grid>
 
             <!-- 从模板创建 -->
             <TextBlock Text="从模板创建项目" FontWeight="SemiBold" Margin="0,5,0,0"/>
-            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" Margin="0,5">
+            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" Margin="0,5">
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="模板路径:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TemplatePath}" 
                          Watermark="C:\Temp\Template\Template.json" />
+                <Button Grid.Row="0" Grid.Column="2" Content="浏览..." Command="{Binding BrowseTemplatePathCommand}" 
+                        Padding="15,5" Margin="5,0,0,0"/>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="新项目路径:" VerticalAlignment="Center" 
                            Margin="0,5,10,0"/>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewProjectPath}" 
                          Watermark="C:\Temp\NewProject" Margin="0,5,0,0"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="浏览..." Command="{Binding BrowseNewProjectPathCommand}" 
+                        Padding="15,5" Margin="5,5,0,0"/>
                 
                 <Button Grid.Row="2" Grid.Column="1" Content="从模板创建" 
                         Command="{Binding CreateFromTemplateCommand}" 
