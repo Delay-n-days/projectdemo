@@ -170,70 +170,56 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseProjectPath()
     {
-        if (_window == null) return;
-
-        var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-        {
-            Title = "选择项目路径",
-            AllowMultiple = false
-        });
-
-        if (folder.Count > 0)
-        {
-            ProjectPath = folder[0].Path.LocalPath;
-        }
+        var path = await OpenFolderPickerAsync("选择项目路径");
+        if (path != null) ProjectPath = path;
     }
 
     [RelayCommand]
     private async Task BrowseSaveAsPath()
     {
-        if (_window == null) return;
-
-        var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-        {
-            Title = "选择另存为路径",
-            AllowMultiple = false
-        });
-
-        if (folder.Count > 0)
-        {
-            SaveAsPath = folder[0].Path.LocalPath;
-        }
+        var path = await OpenFolderPickerAsync("选择另存为路径");
+        if (path != null) SaveAsPath = path;
     }
 
     [RelayCommand]
     private async Task BrowseTemplatePath()
     {
-        if (_window == null) return;
-
-        var files = await _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "选择模板文件",
-            AllowMultiple = false,
-            FileTypeFilter = new[] { new FilePickerFileType("JSON文件") { Patterns = new[] { "*.json" } } }
-        });
-
-        if (files.Count > 0)
-        {
-            TemplatePath = files[0].Path.LocalPath;
-        }
+        var path = await OpenFilePickerAsync("选择模板文件", new[] { "*.json" }, "JSON文件");
+        if (path != null) TemplatePath = path;
     }
 
     [RelayCommand]
     private async Task BrowseNewProjectPath()
     {
-        if (_window == null) return;
+        var path = await OpenFolderPickerAsync("选择新项目路径");
+        if (path != null) NewProjectPath = path;
+    }
+
+    private async Task<string?> OpenFolderPickerAsync(string title)
+    {
+        if (_window == null) return null;
 
         var folder = await _window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
-            Title = "选择新项目路径",
+            Title = title,
             AllowMultiple = false
         });
 
-        if (folder.Count > 0)
+        return folder.Count > 0 ? folder[0].Path.LocalPath : null;
+    }
+
+    private async Task<string?> OpenFilePickerAsync(string title, string[] patterns, string description)
+    {
+        if (_window == null) return null;
+
+        var files = await _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            NewProjectPath = folder[0].Path.LocalPath;
-        }
+            Title = title,
+            AllowMultiple = false,
+            FileTypeFilter = new[] { new FilePickerFileType(description) { Patterns = patterns } }
+        });
+
+        return files.Count > 0 ? files[0].Path.LocalPath : null;
     }
 
     private void UpdateDisplay()
