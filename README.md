@@ -2,6 +2,8 @@
 
 一个基于 .NET 9 的项目管理框架，提供灵活的模型化项目管理功能，支持多种项目模型类型的动态创建和管理。
 
+> **注意**: 本文档中的代码行号引用基于当前代码库版本。随着代码演进，行号可能会发生变化。建议使用文件路径和类/方法名称作为主要导航方式。
+
 ## 📋 目录
 
 - [项目概述](#项目概述)
@@ -115,7 +117,7 @@ ModelFactory (工厂)
 ## 核心类索引
 
 ### 1. BaseProjectModel - 模型基类
-**文件位置**: [`ProjectManager.Core/BaseProjectModel.cs`](ProjectManager.Core/BaseProjectModel.cs)
+**文件位置**: [`ProjectManager.Core/BaseProjectModel.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/BaseProjectModel.cs)
 
 所有具体模型类的抽象基类，定义了模型的基本结构和通用功能。
 
@@ -148,7 +150,7 @@ public abstract class BaseProjectModel(ModelProjectConfig projectConfig)
 ---
 
 ### 2. ProjectManager - 项目管理核心类
-**文件位置**: [`ProjectManager.Core/ProjectManager.cs`](ProjectManager.Core/ProjectManager.cs)
+**文件位置**: [`ProjectManager.Core/ProjectManager.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/ProjectManager.cs)
 
 负责项目的完整生命周期管理，是系统的核心控制器。
 
@@ -206,7 +208,7 @@ public void OpenProject(string projectJsonPath)
 ---
 
 ### 3. LoggerProjectModel - 日志记录器模型
-**文件位置**: [`ProjectManager.Core/LoggerProjectModel.cs`](ProjectManager.Core/LoggerProjectModel.cs)
+**文件位置**: [`ProjectManager.Core/LoggerProjectModel.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/LoggerProjectModel.cs)
 
 负责记录和管理项目中的日志信息，支持不同日志级别和最大条目限制。
 
@@ -252,7 +254,7 @@ public override void Execute(params object[] args)
 ---
 
 ### 4. CounterProjectModel - 计数器模型
-**文件位置**: [`ProjectManager.Core/CounterProjectModel.cs`](ProjectManager.Core/CounterProjectModel.cs)
+**文件位置**: [`ProjectManager.Core/CounterProjectModel.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/CounterProjectModel.cs)
 
 提供计数功能，支持自定义步长和最大值限制。
 
@@ -310,7 +312,7 @@ public int Increment()
 ---
 
 ### 5. ModelFactory - 模型工厂
-**文件位置**: [`ProjectManager.Core/ModelFactory.cs`](ProjectManager.Core/ModelFactory.cs)
+**文件位置**: [`ProjectManager.Core/ModelFactory.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/ModelFactory.cs)
 
 通过注册字典模式创建模型实例，支持动态扩展。
 
@@ -348,7 +350,7 @@ ModelFactory.Register("mymodel", config => new MyCustomModel(config));
 ---
 
 ### 6. FileManager - 文件管理器
-**文件位置**: [`ProjectManager.Core/FileManager.cs`](ProjectManager.Core/FileManager.cs)
+**文件位置**: [`ProjectManager.Core/FileManager.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/FileManager.cs)
 
 统一处理所有文件操作和 JSON 序列化/反序列化。
 
@@ -381,7 +383,7 @@ private static readonly JsonSerializerSettings JsonSettings = new()
 ---
 
 ### 7. ValidationRules - 验证规则
-**文件位置**: [`ProjectManager.Core/ValidationRules.cs`](ProjectManager.Core/ValidationRules.cs)
+**文件位置**: [`ProjectManager.Core/ValidationRules.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Core/ValidationRules.cs)
 
 集中管理所有验证规则，确保数据的有效性。
 
@@ -416,7 +418,7 @@ public static void ValidateVersion(string version)
 ---
 
 ### 8. MainViewModel - UI 视图模型
-**文件位置**: [`ProjectManager.UI/ViewModels/MainViewModel.cs`](ProjectManager.UI/ViewModels/MainViewModel.cs)
+**文件位置**: [`ProjectManager.UI/ViewModels/MainViewModel.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.UI/ViewModels/MainViewModel.cs)
 
 Avalonia UI 应用的主视图模型，连接 UI 和核心业务逻辑。
 
@@ -460,7 +462,7 @@ private readonly Core.ProjectManager _projectManager = new();
 
 ```bash
 # 克隆仓库
-git clone <repository-url>
+git clone https://github.com/Delay-n-days/projectdemo.git
 cd projectdemo
 
 # 还原依赖
@@ -493,7 +495,7 @@ dotnet run
 
 ### 示例 1: 创建新项目
 
-**代码位置**: [`ProjectManager.Console/Program.cs`](ProjectManager.Console/Program.cs) (第 12-31 行)
+**代码位置**: [`ProjectManager.Console/Program.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Console/Program.cs) (第 12-31 行，参考)
 
 ```csharp
 var app = new ProjectManager.Core.ProjectManager();
@@ -523,7 +525,7 @@ app.SaveProject();
 
 ### 示例 2: 打开现有项目
 
-**代码位置**: [`ProjectManager.Console/Program.cs`](ProjectManager.Console/Program.cs) (第 34-40 行)
+**代码位置**: [`ProjectManager.Console/Program.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Console/Program.cs) (第 34-40 行，参考)
 
 ```csharp
 var app = new ProjectManager.Core.ProjectManager();
@@ -540,7 +542,7 @@ var logs = logger?.GetLogs();
 
 ### 示例 3: 从模板创建项目
 
-**代码位置**: [`ProjectManager.Console/Program.cs`](ProjectManager.Console/Program.cs) (第 43-54 行)
+**代码位置**: [`ProjectManager.Console/Program.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Console/Program.cs) (第 43-54 行，参考)
 
 ```csharp
 var app = new ProjectManager.Core.ProjectManager();
@@ -559,7 +561,7 @@ app.SaveProject();
 
 ### 示例 4: 计数器最大值测试
 
-**代码位置**: [`ProjectManager.Console/Program.cs`](ProjectManager.Console/Program.cs) (第 57-73 行)
+**代码位置**: [`ProjectManager.Console/Program.cs`](https://github.com/Delay-n-days/projectdemo/blob/main/ProjectManager.Console/Program.cs) (第 57-73 行，参考)
 
 ```csharp
 var app = new ProjectManager.Core.ProjectManager();
@@ -670,7 +672,7 @@ MyProject/
 
 项目包含完整的单元测试套件，覆盖所有核心功能。
 
-**测试文件位置**: [`ProjectManager.Tests/`](ProjectManager.Tests/)
+**测试文件位置**: [`ProjectManager.Tests/`](https://github.com/Delay-n-days/projectdemo/tree/main/ProjectManager.Tests)
 
 ### 运行所有测试
 
