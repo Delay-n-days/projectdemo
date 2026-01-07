@@ -21,8 +21,8 @@ public class ModelsTests : IDisposable
     [Fact]
     public void LoggerModel_Execute_ShouldAddLog()
     {
-        var config = new ModelConfig("test_logger", "logger", "Test logger", [], _testDir);
-        var logger = new LoggerModel(config);
+        var config = new ModelProjectConfig("test_logger", "logger", "Test logger", [], _testDir);
+        var logger = new LoggerProjectModel(config);
 
         logger.Execute("Test message", "INFO");
         var logs = logger.GetLogs();
@@ -34,8 +34,8 @@ public class ModelsTests : IDisposable
     [Fact]
     public void LoggerModel_ClearLogs_ShouldRemoveAllLogs()
     {
-        var config = new ModelConfig("test_logger", "logger", "Test logger", [], _testDir);
-        var logger = new LoggerModel(config);
+        var config = new ModelProjectConfig("test_logger", "logger", "Test logger", [], _testDir);
+        var logger = new LoggerProjectModel(config);
 
         logger.Execute("Test 1");
         logger.Execute("Test 2");
@@ -47,8 +47,8 @@ public class ModelsTests : IDisposable
     [Fact]
     public void CounterModel_Increment_ShouldIncreaseCount()
     {
-        var config = new ModelConfig("test_counter", "counter", "Test counter", [], _testDir);
-        var counter = new CounterModel(config);
+        var config = new ModelProjectConfig("test_counter", "counter", "Test counter", [], _testDir);
+        var counter = new CounterProjectModel(config);
 
         var count = counter.Increment();
         Assert.Equal(1, count);
@@ -60,8 +60,8 @@ public class ModelsTests : IDisposable
     [Fact]
     public void CounterModel_MaxCount_ShouldResetWhenExceeded()
     {
-        var config = new ModelConfig("test_counter", "counter", "Test counter", [], _testDir);
-        var counter = new CounterModel(config, maxCount: 3);
+        var config = new ModelProjectConfig("test_counter", "counter", "Test counter", [], _testDir);
+        var counter = new CounterProjectModel(config, maxCount: 3);
 
         counter.Increment(); // 1
         counter.Increment(); // 2
@@ -74,8 +74,8 @@ public class ModelsTests : IDisposable
     [Fact]
     public void CounterModel_Reset_ShouldSetCountToZero()
     {
-        var config = new ModelConfig("test_counter", "counter", "Test counter", [], _testDir);
-        var counter = new CounterModel(config);
+        var config = new ModelProjectConfig("test_counter", "counter", "Test counter", [], _testDir);
+        var counter = new CounterProjectModel(config);
 
         counter.Increment();
         counter.Increment();

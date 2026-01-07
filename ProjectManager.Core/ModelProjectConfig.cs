@@ -1,7 +1,7 @@
 namespace ProjectManager.Core;
 
 /// <summary>模型配置数据类</summary>
-public record ModelConfig(
+public record ModelProjectConfig(
     string ModelName,
     string ModelType,
     string Description,

@@ -4,8 +4,12 @@ namespace ProjectManager.Core;
 public class ProjectManager
 {
     public ProjectConfig? ProjectConfig { get; private set; }
-    public List<BaseModel> Models { get; private set; } = [];
-
+    public List<BaseProjectModel> Models { get; private set; } = [];
+    public ProjectManager(string? projectJsonPath = null)
+    {
+        if (!string.IsNullOrEmpty(projectJsonPath))
+            OpenProject(projectJsonPath);
+    }
     public void OpenProject(string projectJsonPath)
     {
         var projectPath = Path.GetDirectoryName(projectJsonPath) 
@@ -31,7 +35,7 @@ public class ProjectManager
                 if (File.Exists(modelConfigPath))
                 {
                     var modelData = FileManager.LoadJson<ModelConfigData>(modelConfigPath);
-                    var modelConfig = new ModelConfig(
+                    var modelConfig = new ModelProjectConfig(
                         modelName,
                         modelData.ModelType ?? "",
                         modelData.Description ?? "",
@@ -64,7 +68,7 @@ public class ProjectManager
         Models.Clear();
         foreach (var dto in modelsConfig)
         {
-            var config = new ModelConfig(
+            var config = new ModelProjectConfig(
                 dto.Name,
                 dto.Type,
                 dto.Description ?? "",
@@ -112,7 +116,7 @@ public class ProjectManager
         };
 
         foreach (var model in Models)
-            model.Config = model.Config with { ProjectPath = newProjectPath };
+            model.ProjectConfig = model.ProjectConfig with { ProjectPath = newProjectPath };
 
         SaveProject();
     }
@@ -132,17 +136,17 @@ public class ProjectManager
         };
 
         foreach (var model in Models)
-            model.Config = model.Config with { ProjectPath = newProjectPath };
+            model.ProjectConfig = model.ProjectConfig with { ProjectPath = newProjectPath };
 
         SaveProject();
         OpenProject(newProjectJsonPath);
     }
 
-    public BaseModel? GetModel(string modelName) =>
-        Models.FirstOrDefault(m => m.Config.ModelName == modelName);
+    public BaseProjectModel? GetModel(string modelName) =>
+        Models.FirstOrDefault(m => m.ProjectConfig.ModelName == modelName);
 
-    public List<BaseModel> GetModelsByType(string modelType) =>
-        Models.Where(m => m.Config.ModelType == modelType).ToList();
+    public List<BaseProjectModel> GetModelsByType(string modelType) =>
+        Models.Where(m => m.ProjectConfig.ModelType == modelType).ToList();
 }
 
 public record ModelConfigDto(string Type, string Name, string? Description = null, Dictionary<string, object>? Parameters = null);

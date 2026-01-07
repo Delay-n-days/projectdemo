@@ -70,7 +70,7 @@ public partial class NewProjectViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Create()
+    private async Task Create()
     {
         if (string.IsNullOrWhiteSpace(ProjectName))
         {
@@ -84,8 +84,86 @@ public partial class NewProjectViewModel : ObservableObject
             return;
         }
 
+        // 检查目标路径是否已存在
+        if (Directory.Exists(FullPath))
+        {
+            var result = await ShowOverwriteConfirmation();
+            if (!result)
+            {
+                return; // 用户选择不覆盖，取消操作
+            }
+        }
+
         Result = FullPath;
         _window?.Close(true);
+    }
+
+    private async Task<bool> ShowOverwriteConfirmation()
+    {
+        if (_window == null) return false;
+
+        var dialog = new Window
+        {
+            Title = "确认覆盖",
+            Width = 400,
+            Height = 180,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false
+        };
+
+        var result = false;
+        var panel = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(20),
+            Spacing = 20
+        };
+
+        panel.Children.Add(new Avalonia.Controls.TextBlock
+        {
+            Text = $"目标位置已存在项目:\n{FullPath}\n\n是否覆盖现有项目？",
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            FontSize = 14
+        });
+
+        var buttonPanel = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+            Spacing = 10
+        };
+
+        var yesButton = new Button
+        {
+            Content = "覆盖",
+            Padding = new Avalonia.Thickness(20, 8),
+            IsDefault = false
+        };
+        yesButton.Click += (s, e) =>
+        {
+            result = true;
+            dialog.Close();
+        };
+
+        var noButton = new Button
+        {
+            Content = "取消",
+            Padding = new Avalonia.Thickness(20, 8),
+            IsDefault = true
+        };
+        noButton.Click += (s, e) =>
+        {
+            result = false;
+            dialog.Close();
+        };
+
+        buttonPanel.Children.Add(yesButton);
+        buttonPanel.Children.Add(noButton);
+        panel.Children.Add(buttonPanel);
+
+        dialog.Content = panel;
+
+        await dialog.ShowDialog(_window);
+        return result;
     }
 
     [RelayCommand]

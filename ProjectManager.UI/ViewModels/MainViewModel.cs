@@ -13,7 +13,7 @@ namespace ProjectManager.UI.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private readonly Application _app = new();
+    private readonly Core.ProjectManager _projectManager = new();
     private Window? _window;
 
     [ObservableProperty] private string _logMessage = "";
@@ -35,8 +35,8 @@ public partial class MainViewModel : ObservableObject
             var file = await OpenFilePickerAsync("选择项目文件", new[] { "*.json" }, "JSON文件");
             if (file == null) return;
 
-            _app.OpenProject(file);
-            StatusMessage = $"✓ 项目已打开: {_app.ProjectConfig?.ProjectName} v{_app.ProjectConfig?.Version}";
+            _projectManager.OpenProject(file);
+            StatusMessage = $"✓ 项目已打开: {_projectManager.ProjectConfig?.ProjectName} v{_projectManager.ProjectConfig?.Version}";
             UpdateDisplay();
         }
         catch (Exception ex)
@@ -50,11 +50,11 @@ public partial class MainViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(LogMessage)) return;
 
-        var logger = _app.GetModel("AppLogger") as LoggerModel;
+        var logger = _projectManager.GetModel("AppLogger") as LoggerProjectModel;
         if (logger != null)
         {
             logger.Execute(LogMessage, "INFO");
-            _app.SaveProject();
+            _projectManager.SaveProject();
             UpdateDisplay();
             LogMessage = "";
             StatusMessage = "✓ 日志已添加";
@@ -64,11 +64,11 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void IncrementCounter()
     {
-        var counter = _app.GetModel("OperationCounter") as CounterModel;
+        var counter = _projectManager.GetModel("OperationCounter") as CounterProjectModel;
         if (counter != null)
         {
             counter.Increment();
-            _app.SaveProject();
+            _projectManager.SaveProject();
             UpdateDisplay();
             StatusMessage = $"✓ 计数器: {counter.GetCount()}";
         }
@@ -77,11 +77,11 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void DecrementCounter()
     {
-        var counter = _app.GetModel("OperationCounter") as CounterModel;
+        var counter = _projectManager.GetModel("OperationCounter") as CounterProjectModel;
         if (counter != null)
         {
             counter.Decrement();
-            _app.SaveProject();
+            _projectManager.SaveProject();
             UpdateDisplay();
             StatusMessage = $"✓ 计数器: {counter.GetCount()}";
         }
@@ -90,11 +90,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ResetCounter()
     {
-        var counter = _app.GetModel("OperationCounter") as CounterModel;
-        if (counter != null)
+        if (_projectManager.GetModel("OperationCounter") is CounterProjectModel counter)
         {
             counter.Reset();
-            _app.SaveProject();
+            _projectManager.SaveProject();
             UpdateDisplay();
             StatusMessage = "✓ 计数器已重置";
         }
@@ -105,14 +104,14 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            if (_app.ProjectConfig == null)
+            if (_projectManager.ProjectConfig == null)
             {
                 StatusMessage = "✗ 错误: 没有打开的项目";
                 return;
             }
 
             // 弹出另存为对话框
-            var saveAsVm = new SaveAsViewModel(_app.ProjectConfig.ProjectName);
+            var saveAsVm = new SaveAsViewModel(_projectManager.ProjectConfig.ProjectName);
             var saveAsDialog = new SaveAsDialog(saveAsVm) { DataContext = saveAsVm };
             
             var result = await saveAsDialog.ShowDialog<bool>(_window!);
@@ -122,7 +121,7 @@ public partial class MainViewModel : ObservableObject
                 return;
             }
 
-            _app.SaveAs(saveAsVm.Result);
+            _projectManager.SaveAsProject(saveAsVm.Result);
             StatusMessage = $"✓ 项目已另存为: {saveAsVm.Result}";
             UpdateDisplay();
         }
@@ -160,7 +159,7 @@ public partial class MainViewModel : ObservableObject
             }
 
             // 创建项目
-            _app.CreateFromTemplate(templateVm.Result.Path, newProjectVm.Result);
+            _projectManager.CreateFromTemplate(templateVm.Result.Path, newProjectVm.Result);
             StatusMessage = $"✓ 从模板创建项目成功: {newProjectVm.Result}";
             UpdateDisplay();
         }
@@ -201,7 +200,7 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateDisplay()
     {
-        var logger = _app.GetModel("AppLogger") as LoggerModel;
+        var logger = _projectManager.GetModel("AppLogger") as LoggerProjectModel;
         if (logger != null)
         {
             Logs.Clear();
@@ -209,7 +208,7 @@ public partial class MainViewModel : ObservableObject
                 Logs.Add(log);
         }
 
-        var counter = _app.GetModel("OperationCounter") as CounterModel;
+        var counter = _projectManager.GetModel("OperationCounter") as CounterProjectModel;
         CounterValue = counter?.GetCount() ?? 0;
     }
 }

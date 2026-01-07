@@ -10,7 +10,7 @@ try
 {
     // 示例1: 创建新项目
     Console.WriteLine("=== Example 1: Create New Project ===");
-    var app1 = new Application();
+    var app1 = new ProjectManager.Core.ProjectManager();
     var models1 = new List<ModelConfigDto>
     {
         new("logger", "main_logger", "主日志记录器", new() { ["logLevel"] = "INFO" }),
@@ -19,8 +19,8 @@ try
 
     app1.NewProject(Path.Combine(demoDir, "project1"), "MyProject", "1.0.0", models1);
 
-    var logger1 = app1.GetModel("main_logger") as LoggerModel;
-    var counter1 = app1.GetModel("operation_counter") as CounterModel;
+    var logger1 = app1.GetModel("main_logger") as LoggerProjectModel;
+    var counter1 = app1.GetModel("operation_counter") as CounterProjectModel;
 
     logger1!.Execute("Project created", "INFO");
     counter1!.Increment();
@@ -32,22 +32,22 @@ try
 
     // 示例2: 打开现有项目
     Console.WriteLine("=== Example 2: Open Existing Project ===");
-    var app2 = new Application(Path.Combine(demoDir, "project1", "MyProject.json"));
-    var logger2 = app2.GetModel("main_logger") as LoggerModel;
-    var counter2 = app2.GetModel("operation_counter") as CounterModel;
+    var app2 = new ProjectManager.Core.ProjectManager(Path.Combine(demoDir, "project1", "MyProject.json"));
+    var logger2 = app2.GetModel("main_logger") as LoggerProjectModel;
+    var counter2 = app2.GetModel("operation_counter") as CounterProjectModel;
 
     Console.WriteLine($"✓ Project: {app2.ProjectConfig?.ProjectName}, Version: {app2.ProjectConfig?.Version}");
     Console.WriteLine($"✓ Current count: {counter2!.GetCount()}\n");
 
     // 示例3: 从模板创建
     Console.WriteLine("=== Example 3: Create From Template ===");
-    var app3 = new Application();
+    var app3 = new ProjectManager.Core.ProjectManager();
     app3.CreateFromTemplate(
         Path.Combine(demoDir, "project1", "MyProject.json"),
         Path.Combine(demoDir, "project_from_template")
     );
     
-    var logger3 = app3.GetModel("main_logger") as LoggerModel;
+    var logger3 = app3.GetModel("main_logger") as LoggerProjectModel;
     logger3!.Execute("Created from template", "INFO");
     app3.SaveProject();
     
@@ -55,7 +55,7 @@ try
 
     // 示例4: 测试计数器最大值
     Console.WriteLine("=== Example 4: Counter Max Count Test ===");
-    var app4 = new Application();
+    var app4 = new ProjectManager.Core.ProjectManager();
     app4.NewProject(
         Path.Combine(demoDir, "counter_test"),
         "CounterTest",
@@ -63,7 +63,7 @@ try
         [new("counter", "limited_counter", Parameters: new() { ["step"] = 1, ["maxCount"] = 5 })]
     );
 
-    var counter4 = app4.GetModel("limited_counter") as CounterModel;
+    var counter4 = app4.GetModel("limited_counter") as CounterProjectModel;
     Console.WriteLine("Max count set to 5:");
     
     for (int i = 0; i < 7; i++)
