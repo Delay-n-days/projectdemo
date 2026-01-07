@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ProjectManager.UI.ViewModels"
+        x:Class="ProjectManager.UI.Views.TemplateSelectionDialog"
+        x:DataType="vm:TemplateSelectionViewModel"
+        Width="800" Height="600"
+        Title="选择模版项目"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- 主内容区 -->
+        <Grid Grid.Row="0" ColumnDefinitions="250,*" Margin="10">
+            <!-- 左侧：模版列表 -->
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="5">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="模版列表" FontWeight="Bold" Margin="5"/>
+                    <ListBox ItemsSource="{Binding Templates}" 
+                             SelectedItem="{Binding SelectedTemplate}"
+                             Margin="0,5,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" Margin="5"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- 右侧：预览区 -->
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Margin="10,0,0,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="模版预览" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <ScrollViewer>
+                        <TextBox Text="{Binding PreviewJson}" 
+                                 IsReadOnly="True" 
+                                 FontFamily="Consolas"
+                                 TextWrapping="Wrap"
+                                 Background="Transparent"
+                                 BorderThickness="0"/>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- 底部按钮 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="10">
+            <Button Content="下一步" Command="{Binding NextCommand}" Padding="20,8" IsDefault="True"/>
+            <Button Content="取消" Command="{Binding CancelCommand}" Padding="20,8"/>
+        </StackPanel>
+    </Grid>
+</Window>

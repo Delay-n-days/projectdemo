@@ -3,11 +3,10 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProjectManager.Core;
+using ProjectManager.UI.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProjectManager.UI.ViewModels;
@@ -17,15 +16,9 @@ public partial class MainViewModel : ObservableObject
     private readonly Application _app = new();
     private Window? _window;
 
-    [ObservableProperty] private string _projectPath = @"C:\Temp\MyProject";
-    [ObservableProperty] private string _projectName = "TestProject";
-    [ObservableProperty] private string _version = "1.0.0";
     [ObservableProperty] private string _logMessage = "";
     [ObservableProperty] private int _counterValue;
     [ObservableProperty] private string _statusMessage = "Ready";
-    [ObservableProperty] private string _saveAsPath = @"C:\Temp\MyProjectCopy";
-    [ObservableProperty] private string _templatePath = @"C:\Temp\TemplateProject\TemplateProject.json";
-    [ObservableProperty] private string _newProjectPath = @"C:\Temp\NewProject";
     
     public ObservableCollection<string> Logs { get; } = [];
 
@@ -35,33 +28,14 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void CreateProject()
+    private async Task OpenProject()
     {
         try
         {
-            var models = new List<ModelConfigDto>
-            {
-                new("logger", "AppLogger"),
-                new("counter", "OperationCounter", Parameters: new() { ["step"] = 1 })
-            };
+            var file = await OpenFilePickerAsync("选择项目文件", new[] { "*.json" }, "JSON文件");
+            if (file == null) return;
 
-            _app.NewProject(ProjectPath, ProjectName, Version, models);
-            StatusMessage = $"✓ 项目 '{ProjectName}' 创建成功！";
-            UpdateDisplay();
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"✗ 错误: {ex.Message}";
-        }
-    }
-
-    [RelayCommand]
-    private void OpenProject()
-    {
-        try
-        {
-            var projectFile = Path.Combine(ProjectPath, $"{ProjectName}.json");
-            _app.OpenProject(projectFile);
+            _app.OpenProject(file);
             StatusMessage = $"✓ 项目已打开: {_app.ProjectConfig?.ProjectName} v{_app.ProjectConfig?.Version}";
             UpdateDisplay();
         }
@@ -127,7 +101,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveAsProject()
+    private async Task SaveAsProject()
     {
         try
         {
@@ -137,28 +111,19 @@ public partial class MainViewModel : ObservableObject
                 return;
             }
 
-            _app.SaveAs(SaveAsPath);
-            StatusMessage = $"✓ 项目已另存为: {SaveAsPath}";
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"✗ 错误: {ex.Message}";
-        }
-    }
-
-    [RelayCommand]
-    private void CreateFromTemplate()
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(TemplatePath) || string.IsNullOrWhiteSpace(NewProjectPath))
+            // 弹出另存为对话框
+            var saveAsVm = new SaveAsViewModel(_app.ProjectConfig.ProjectName);
+            var saveAsDialog = new SaveAsDialog(saveAsVm) { DataContext = saveAsVm };
+            
+            var result = await saveAsDialog.ShowDialog<bool>(_window!);
+            if (!result || saveAsVm.Result == null)
             {
-                StatusMessage = "✗ 错误: 请输入模板路径和新项目路径";
+                StatusMessage = "✗ 已取消";
                 return;
             }
 
-            _app.CreateFromTemplate(TemplatePath, NewProjectPath);
-            StatusMessage = $"✓ 从模板创建项目成功: {NewProjectPath}";
+            _app.SaveAs(saveAsVm.Result);
+            StatusMessage = $"✓ 项目已另存为: {saveAsVm.Result}";
             UpdateDisplay();
         }
         catch (Exception ex)
@@ -168,32 +133,44 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task BrowseProjectPath()
+    private async Task CreateFromTemplate()
     {
-        var path = await OpenFolderPickerAsync("选择项目路径");
-        if (path != null) ProjectPath = path;
+        try
+        {
+            // 第一步：选择模版
+            var templateVm = new TemplateSelectionViewModel();
+            var templateDialog = new TemplateSelectionDialog(templateVm) { DataContext = templateVm };
+            
+            var templateResult = await templateDialog.ShowDialog<bool>(_window!);
+            if (!templateResult || templateVm.Result == null)
+            {
+                StatusMessage = "✗ 已取消";
+                return;
+            }
+
+            // 第二步：输入新项目信息
+            var newProjectVm = new NewProjectViewModel();
+            var newProjectDialog = new NewProjectDialog(newProjectVm) { DataContext = newProjectVm };
+            
+            var createResult = await newProjectDialog.ShowDialog<bool>(_window!);
+            if (!createResult || newProjectVm.Result == null)
+            {
+                StatusMessage = "✗ 已取消";
+                return;
+            }
+
+            // 创建项目
+            _app.CreateFromTemplate(templateVm.Result.Path, newProjectVm.Result);
+            StatusMessage = $"✓ 从模板创建项目成功: {newProjectVm.Result}";
+            UpdateDisplay();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"✗ 错误: {ex.Message}";
+        }
     }
 
-    [RelayCommand]
-    private async Task BrowseSaveAsPath()
-    {
-        var path = await OpenFolderPickerAsync("选择另存为路径");
-        if (path != null) SaveAsPath = path;
-    }
 
-    [RelayCommand]
-    private async Task BrowseTemplatePath()
-    {
-        var path = await OpenFilePickerAsync("选择模板文件", new[] { "*.json" }, "JSON文件");
-        if (path != null) TemplatePath = path;
-    }
-
-    [RelayCommand]
-    private async Task BrowseNewProjectPath()
-    {
-        var path = await OpenFolderPickerAsync("选择新项目路径");
-        if (path != null) NewProjectPath = path;
-    }
 
     private async Task<string?> OpenFolderPickerAsync(string title)
     {

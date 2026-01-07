@@ -1,5 +1,7 @@
 namespace ProjectManager.Core;
 
+using Newtonsoft.Json.Linq;
+
 /// <summary>日志记录器模型</summary>
 public class LoggerModel(ModelConfig config) : BaseModel(config)
 {
@@ -27,19 +29,46 @@ public class LoggerModel(ModelConfig config) : BaseModel(config)
         var logEntry = $"[{level}] {message}";
         Console.WriteLine($"[LoggerModel] {logEntry}");
 
-        var logs = Config.Parameters["logs"] as List<object> ?? [];
-        Config.Parameters["logs"] = logs;
+        var logs = GetLogsInternal();
         logs.Add(logEntry);
+        Config.Parameters["logs"] = logs;
 
         var maxEntries = Convert.ToInt32(Config.Parameters.GetValueOrDefault("maxEntries", 1000));
         if (logs.Count > maxEntries)
-            Config.Parameters["logs"] = logs.TakeLast(maxEntries).ToList();
+        {
+            var trimmedLogs = logs.TakeLast(maxEntries).ToList();
+            Config.Parameters["logs"] = trimmedLogs;
+        }
+    }
+
+    private List<object> GetLogsInternal()
+    {
+        var logsParam = Config.Parameters.GetValueOrDefault("logs");
+        
+        // 处理从JSON反序列化的JArray
+        if (logsParam is JArray jArray)
+        {
+            var logs = jArray.Select(x => (object)(x.ToString())).ToList();
+            Config.Parameters["logs"] = logs;
+            return logs;
+        }
+        
+        // 处理List<object>
+        if (logsParam is List<object> list)
+        {
+            return list;
+        }
+        
+        // 默认返回空列表
+        var newList = new List<object>();
+        Config.Parameters["logs"] = newList;
+        return newList;
     }
 
     public List<string> GetLogs()
     {
-        var logs = Config.Parameters.GetValueOrDefault("logs") as List<object>;
-        return logs?.Select(x => x.ToString() ?? "").ToList() ?? [];
+        var logs = GetLogsInternal();
+        return logs.Select(x => x.ToString() ?? "").ToList();
     }
 
     public void ClearLogs() => Config.Parameters["logs"] = new List<object>();

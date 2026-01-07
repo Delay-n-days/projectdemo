@@ -100,7 +100,10 @@ public class ProjectManager
             throw new InvalidOperationException("No project loaded");
 
         FileManager.EnsureDirectory(newProjectPath);
-        var newProjectJsonPath = Path.Combine(newProjectPath, Path.GetFileName(ProjectConfig.ConfigPath));
+        
+        // JSON文件名使用文件夹名
+        var folderName = Path.GetFileName(newProjectPath);
+        var newProjectJsonPath = Path.Combine(newProjectPath, $"{folderName}.json");
 
         ProjectConfig = ProjectConfig with
         {
